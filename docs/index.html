@@ -88,6 +88,14 @@
         .token-setup input { max-width: 500px; margin: 10px auto; display: block; }
         .token-setup p { color: #8b949e; font-size: 0.9em; margin: 8px 0; }
         .token-setup a { color: #58a6ff; }
+        .gh-signin-btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 24px; background: #238636; border: none; border-radius: 6px; color: #fff; font-size: 1em; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .gh-signin-btn:hover { background: #2ea043; }
+        .gh-signin-btn svg { fill: #fff; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 28px; height: 28px; border-radius: 50%; }
+        .user-info .username { color: #58a6ff; font-weight: 600; font-size: 0.9em; }
+        .btn.signout { background: #21262d; border-color: #f85149; color: #f85149; }
+        .btn.signout:hover { background: #f8514922; }
         @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .pattern-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -99,24 +107,26 @@
         <!-- Sync Bar -->
         <div class="sync-bar" id="syncBar">
             <span class="status synced" id="syncStatus">Loading...</span>
-            <button class="btn sync" id="btnSync" onclick="syncToGitHub()" disabled>Sync to GitHub</button>
-            <button class="btn" onclick="loadFromGitHub()">Reload from GitHub</button>
-            <button class="btn" onclick="exportProgress()">Export JSON</button>
-            <button class="btn" onclick="showTokenSetup()">Settings</button>
+            <div id="authArea">
+                <button class="gh-signin-btn" id="btnSignIn" onclick="signInWithGitHub()">
+                    <svg height="18" width="18" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    Sign in with GitHub
+                </button>
+            </div>
+            <button class="btn sync" id="btnSync" onclick="syncToGitHub()" disabled style="display:none;">Sync to GitHub</button>
+            <button class="btn" onclick="loadFromGitHub()">Reload</button>
+            <button class="btn" onclick="exportProgress()">Export</button>
         </div>
 
-        <!-- Token Setup (hidden by default) -->
+        <!-- Token Setup (hidden — kept as fallback) -->
         <div class="section token-setup" id="tokenSetup" style="display:none;">
-            <h3 style="color: #58a6ff; margin-bottom: 10px;">GitHub Token Setup</h3>
-            <p>Enter a GitHub PAT with <strong>Contents: Read &amp; write</strong> access to <code>sde-interview-prep</code>.</p>
-            <p>Create one at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></p>
+            <h3 style="color: #58a6ff; margin-bottom: 10px;">Manual Token Setup (Fallback)</h3>
+            <p>If OAuth doesn't work, enter a GitHub PAT with <strong>repo</strong> scope.</p>
             <input type="password" id="tokenInput" placeholder="ghp_xxxx or github_pat_xxxx">
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
-                <button class="btn primary" onclick="saveToken()">Save Token</button>
+                <button class="btn primary" onclick="saveManualToken()">Save Token</button>
                 <button class="btn" onclick="hideTokenSetup()">Cancel</button>
-                <button class="btn warn" onclick="clearToken()">Clear Token</button>
             </div>
-            <p style="margin-top: 10px; font-size: 0.8em;">Token is stored in your browser's localStorage only. Never sent anywhere except GitHub API.</p>
         </div>
 
         <!-- Stats Overview -->
@@ -215,6 +225,8 @@
     const REPO = 'chaitu2568/sde-interview-prep';
     const FILE_PATH = 'tracking/progress.json';
     const API = 'https://api.github.com';
+    const OAUTH_CLIENT_ID = 'Ov23liTn2RHLnhrV9jRk';
+    const OAUTH_REDIRECT = 'https://sde-interview-prep.vercel.app/api/auth/callback';
 
     let data = null;
     let fileSha = null;
@@ -222,6 +234,7 @@
     let selectedWeek = 1;
     let currentProblemId = null;
     let autoSaveTimer = null;
+    let ghUser = null;
 
     const PATTERNS = {
         'arrays-hashing': 'Arrays & Hashing', 'two-pointers': 'Two Pointers',
@@ -234,7 +247,113 @@
         'design': 'Design'
     };
 
-    function getToken() { return localStorage.getItem('gh-pat') || ''; }
+    // === Auth ===
+    function getToken() { return localStorage.getItem('gh-oauth-token') || ''; }
+
+    function signInWithGitHub() {
+        const scope = 'repo';
+        const url = `https://github.com/login/oauth/authorize?client_id=${OAUTH_CLIENT_ID}&redirect_uri=${encodeURIComponent(OAUTH_REDIRECT)}&scope=${scope}`;
+        window.location.href = url;
+    }
+
+    function signOut() {
+        localStorage.removeItem('gh-oauth-token');
+        localStorage.removeItem('gh-user');
+        ghUser = null;
+        updateAuthUI();
+        updateSyncStatus();
+        toast('Signed out', 'info');
+    }
+
+    function handleOAuthCallback() {
+        // Check for token in hash fragment (from Vercel callback)
+        const hash = window.location.hash;
+        if (hash.includes('access_token=')) {
+            const params = new URLSearchParams(hash.substring(1));
+            const token = params.get('access_token');
+            if (token) {
+                localStorage.setItem('gh-oauth-token', token);
+                // Clean up the URL
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+                toast('Signed in successfully!', 'success');
+                fetchGitHubUser();
+                return true;
+            }
+        }
+        // Check for auth error
+        const urlParams = new URLSearchParams(window.location.search);
+        const authError = urlParams.get('auth_error');
+        if (authError) {
+            toast('Sign-in failed: ' + authError, 'error');
+            history.replaceState(null, '', window.location.pathname);
+        }
+        return false;
+    }
+
+    async function fetchGitHubUser() {
+        const token = getToken();
+        if (!token) return;
+        try {
+            const res = await fetch(`${API}/user`, {
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            if (!res.ok) {
+                // Token expired or revoked
+                if (res.status === 401) {
+                    localStorage.removeItem('gh-oauth-token');
+                    localStorage.removeItem('gh-user');
+                    toast('Session expired. Please sign in again.', 'error');
+                }
+                return;
+            }
+            ghUser = await res.json();
+            localStorage.setItem('gh-user', JSON.stringify({ login: ghUser.login, avatar_url: ghUser.avatar_url }));
+            updateAuthUI();
+        } catch (err) {
+            console.error('Failed to fetch user:', err);
+        }
+    }
+
+    function updateAuthUI() {
+        const area = document.getElementById('authArea');
+        const syncBtn = document.getElementById('btnSync');
+        const token = getToken();
+
+        if (token && ghUser) {
+            area.innerHTML = `
+                <div class="user-info">
+                    <img src="${ghUser.avatar_url}" alt="${ghUser.login}">
+                    <span class="username">@${ghUser.login}</span>
+                    <button class="btn signout" onclick="signOut()">Sign Out</button>
+                </div>`;
+            syncBtn.style.display = '';
+        } else if (token) {
+            // Token exists but user not fetched yet
+            const cached = localStorage.getItem('gh-user');
+            if (cached) {
+                ghUser = JSON.parse(cached);
+                updateAuthUI();
+                return;
+            }
+            area.innerHTML = `<span style="color:#8b949e;font-size:0.85em;">Authenticating...</span>`;
+        } else {
+            area.innerHTML = `
+                <button class="gh-signin-btn" onclick="signInWithGitHub()">
+                    <svg height="18" width="18" viewBox="0 0 16 16"><path fill="#fff" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    Sign in with GitHub
+                </button>`;
+            syncBtn.style.display = 'none';
+        }
+    }
+
+    // Manual token fallback
+    function showTokenSetup() { document.getElementById('tokenSetup').style.display = ''; }
+    function hideTokenSetup() { document.getElementById('tokenSetup').style.display = 'none'; }
+    function saveManualToken() {
+        const token = document.getElementById('tokenInput').value.trim();
+        if (token) { localStorage.setItem('gh-oauth-token', token); toast('Token saved!', 'success'); fetchGitHubUser(); }
+        hideTokenSetup(); updateSyncStatus();
+    }
 
     function toast(msg, type='info') {
         const el = document.createElement('div');
@@ -248,11 +367,11 @@
         const el = document.getElementById('syncStatus');
         const btn = document.getElementById('btnSync');
         if (!getToken()) {
-            el.textContent = 'No GitHub token set — click Settings';
-            el.className = 'status error';
+            el.textContent = 'Sign in to save progress';
+            el.className = 'status';
             btn.disabled = true;
         } else if (isDirty) {
-            el.textContent = 'Unsaved changes — click Sync to push to GitHub';
+            el.textContent = 'Unsaved changes — click Sync';
             el.className = 'status dirty';
             btn.disabled = false;
         } else {
@@ -263,40 +382,37 @@
     }
 
     // === GitHub API ===
-    async function ghFetch(path, opts = {}) {
-        const token = getToken();
-        const headers = { 'Accept': 'application/vnd.github.v3+json' };
-        if (token) headers['Authorization'] = `token ${token}`;
-        if (opts.body) headers['Content-Type'] = 'application/json';
-        const res = await fetch(`${API}${path}`, { ...opts, headers });
-        if (!res.ok) throw new Error(`GitHub API ${res.status}: ${res.statusText}`);
-        return res.json();
-    }
-
     async function loadFromGitHub() {
         try {
             updateSyncStatus();
-            // Public repo — can read without token
-            const res = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`);
+            // Public repo — read without token via raw URL
+            const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const file = await res.json();
-            fileSha = file.sha;
-            const content = atob(file.content.replace(/\n/g, ''));
-            data = JSON.parse(content);
+            data = await res.json();
             localStorage.setItem('sde-prep-data', JSON.stringify(data));
-            localStorage.setItem('sde-prep-sha', fileSha);
+
+            // If signed in, also get SHA for writes
+            const token = getToken();
+            if (token) {
+                try {
+                    const apiRes = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`, {
+                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if (apiRes.ok) { const f = await apiRes.json(); fileSha = f.sha; localStorage.setItem('sde-prep-sha', fileSha); }
+                } catch(e) { /* SHA fetch optional */ }
+            }
+
             isDirty = false;
             render();
             updateSyncStatus();
             toast('Loaded from GitHub', 'success');
         } catch (err) {
             console.error('GitHub load failed:', err);
-            // Fallback to localStorage
             const cached = localStorage.getItem('sde-prep-data');
             if (cached) {
                 data = JSON.parse(cached);
                 fileSha = localStorage.getItem('sde-prep-sha');
-                toast('Using cached data (GitHub fetch failed)', 'info');
+                toast('Using cached data', 'info');
             } else {
                 toast('Could not load data: ' + err.message, 'error');
                 return;
@@ -308,7 +424,7 @@
 
     async function syncToGitHub() {
         const token = getToken();
-        if (!token) { showTokenSetup(); return; }
+        if (!token) { toast('Sign in first to save', 'error'); return; }
         if (!data) return;
 
         const btn = document.getElementById('btnSync');
@@ -316,14 +432,11 @@
         btn.textContent = 'Syncing...';
 
         try {
-            // Get latest SHA first to avoid conflicts
+            // Get latest SHA first
             const res = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`, {
                 headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
             });
-            if (res.ok) {
-                const file = await res.json();
-                fileSha = file.sha;
-            }
+            if (res.ok) { const file = await res.json(); fileSha = file.sha; }
 
             const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
             const body = {
@@ -363,22 +476,11 @@
         isDirty = true;
         localStorage.setItem('sde-prep-data', JSON.stringify(data));
         updateSyncStatus();
-        // Auto-sync after 30 seconds of inactivity
         clearTimeout(autoSaveTimer);
         if (getToken()) {
             autoSaveTimer = setTimeout(() => { syncToGitHub(); }, 30000);
         }
     }
-
-    // === Token Management ===
-    function showTokenSetup() { document.getElementById('tokenSetup').style.display = ''; document.getElementById('tokenInput').value = getToken(); }
-    function hideTokenSetup() { document.getElementById('tokenSetup').style.display = 'none'; }
-    function saveToken() {
-        const token = document.getElementById('tokenInput').value.trim();
-        if (token) { localStorage.setItem('gh-pat', token); toast('Token saved!', 'success'); }
-        hideTokenSetup(); updateSyncStatus();
-    }
-    function clearToken() { localStorage.removeItem('gh-pat'); toast('Token cleared', 'info'); hideTokenSetup(); updateSyncStatus(); }
 
     // === Render ===
     function render() {
@@ -539,6 +641,9 @@
     });
 
     // Init
+    handleOAuthCallback();
+    if (getToken()) { fetchGitHubUser(); }
+    updateAuthUI();
     loadFromGitHub();
     </script>
 </body>
