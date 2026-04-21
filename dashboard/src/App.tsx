@@ -34,10 +34,6 @@ function App() {
   }, [])
 
   const fetchData = useCallback(async () => {
-    if (!getToken()) {
-      addToast('Add your GitHub token in Settings to sync data.', 'info')
-      return
-    }
     setLoading(true)
     setSyncError(null)
     try {
@@ -48,7 +44,6 @@ function App() {
       }
       setData(progress)
       setLastSync(new Date())
-      addToast('Data loaded successfully', 'success')
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load data'
       setSyncError(msg)
@@ -59,6 +54,10 @@ function App() {
   }, [addToast])
 
   const handleSave = useCallback(async (updatedData: ProgressData) => {
+    if (!getToken()) {
+      addToast('Add your GitHub token in Settings to save changes.', 'error')
+      return
+    }
     setSyncing(true)
     setSyncError(null)
     try {
