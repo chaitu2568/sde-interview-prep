@@ -5,15 +5,15 @@
   "totalWeeks": 12,
   "currentWeek": 1,
   "stats": {
-    "totalSolved": 0,
-    "easy": 0,
+    "totalSolved": 1,
+    "easy": 1,
     "medium": 0,
     "hard": 0,
     "systemDesigns": 0,
     "mockInterviews": 0,
     "starStories": 0,
-    "currentStreak": 0,
-    "longestStreak": 0
+    "currentStreak": 1,
+    "longestStreak": 1
   },
   "confidence": {
     "arraysHashing": 0,
@@ -36,7 +36,7 @@
     "behavioral": 0
   },
   "problems": [
-    {"id": 1, "num": 1, "name": "Two Sum", "difficulty": "Easy", "pattern": "arrays-hashing", "week": 1, "day": 1, "solved": false, "date": null, "time": null, "solvedAlone": null, "notes": ""},
+    {"id": 1, "num": 1, "name": "Two Sum", "difficulty": "Easy", "pattern": "arrays-hashing", "week": 1, "day": 1, "solved": true, "date": "2026-04-20", "time": 12, "solvedAlone": "yes", "notes": ""},
     {"id": 2, "num": 217, "name": "Contains Duplicate", "difficulty": "Easy", "pattern": "arrays-hashing", "week": 1, "day": 1, "solved": false, "date": null, "time": null, "solvedAlone": null, "notes": ""},
     {"id": 3, "num": 242, "name": "Valid Anagram", "difficulty": "Easy", "pattern": "arrays-hashing", "week": 1, "day": 2, "solved": false, "date": null, "time": null, "solvedAlone": null, "notes": ""},
     {"id": 4, "num": 49, "name": "Group Anagrams", "difficulty": "Medium", "pattern": "arrays-hashing", "week": 1, "day": 2, "solved": false, "date": null, "time": null, "solvedAlone": null, "notes": ""},
