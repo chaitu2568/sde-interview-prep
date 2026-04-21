@@ -9,23 +9,25 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         h1 { color: #58a6ff; margin-bottom: 5px; font-size: 1.8em; }
-        .subtitle { color: #8b949e; margin-bottom: 30px; }
+        .subtitle { color: #8b949e; margin-bottom: 10px; }
+        .sync-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; padding: 10px 16px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; flex-wrap: wrap; }
+        .sync-bar .status { font-size: 0.85em; color: #8b949e; flex: 1; }
+        .sync-bar .status.synced { color: #3fb950; }
+        .sync-bar .status.dirty { color: #d29922; }
+        .sync-bar .status.error { color: #f85149; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; text-align: center; }
         .stat-number { font-size: 2em; font-weight: 700; color: #58a6ff; }
         .stat-label { font-size: 0.85em; color: #8b949e; margin-top: 4px; }
         .stat-card.green .stat-number { color: #3fb950; }
         .stat-card.orange .stat-number { color: #d29922; }
-        .stat-card.red .stat-number { color: #f85149; }
         .stat-card.purple .stat-number { color: #bc8cff; }
         .section { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
         .section h2 { color: #58a6ff; margin-bottom: 15px; font-size: 1.3em; }
-        .progress-bar-container { background: #21262d; border-radius: 6px; height: 24px; margin-bottom: 10px; overflow: hidden; position: relative; }
+        .progress-bar-container { background: #21262d; border-radius: 6px; height: 24px; margin-bottom: 10px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 6px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 600; color: #fff; min-width: 40px; }
         .progress-bar.blue { background: linear-gradient(90deg, #1f6feb, #58a6ff); }
         .progress-bar.green { background: linear-gradient(90deg, #238636, #3fb950); }
-        .progress-bar.orange { background: linear-gradient(90deg, #9e6a03, #d29922); }
-        .progress-bar.purple { background: linear-gradient(90deg, #8957e5, #bc8cff); }
         .pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
         .pattern-card { background: #21262d; border-radius: 6px; padding: 12px; }
         .pattern-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -45,42 +47,77 @@
         .diff-easy { color: #3fb950; }
         .diff-medium { color: #d29922; }
         .diff-hard { color: #f85149; }
-        .check { cursor: pointer; font-size: 1.2em; }
+        .check { cursor: pointer; font-size: 1.2em; user-select: none; }
         .check.done { color: #3fb950; }
         .check.pending { color: #484f58; }
         .heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-top: 10px; }
-        .heat-cell { aspect-ratio: 1; border-radius: 3px; background: #21262d; position: relative; }
+        .heat-cell { aspect-ratio: 1; border-radius: 3px; background: #21262d; }
         .heat-cell.level-1 { background: #0e4429; }
         .heat-cell.level-2 { background: #006d32; }
         .heat-cell.level-3 { background: #26a641; }
         .heat-cell.level-4 { background: #39d353; }
         .sd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
-        .sd-card { background: #21262d; border-radius: 6px; padding: 14px; border-left: 3px solid #30363d; }
+        .sd-card { background: #21262d; border-radius: 6px; padding: 14px; border-left: 3px solid #30363d; cursor: pointer; }
         .sd-card.done { border-left-color: #3fb950; }
         .sd-card .sd-name { font-weight: 600; margin-bottom: 4px; }
         .sd-card .sd-week { font-size: 0.8em; color: #8b949e; }
         .confidence-bar { display: flex; gap: 3px; margin-top: 6px; }
         .conf-dot { width: 16px; height: 16px; border-radius: 3px; background: #30363d; }
         .conf-dot.filled { background: #58a6ff; }
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .btn { padding: 8px 16px; border-radius: 6px; border: 1px solid #30363d; background: #21262d; color: #c9d1d9; cursor: pointer; font-size: 0.9em; transition: all 0.2s; }
         .btn:hover { background: #30363d; border-color: #58a6ff; }
         .btn.primary { background: #238636; border-color: #238636; color: #fff; }
         .btn.primary:hover { background: #2ea043; }
+        .btn.sync { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+        .btn.sync:hover { background: #388bfd; }
+        .btn.warn { background: #9e6a03; border-color: #9e6a03; color: #fff; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; }
         .modal-overlay.show { display: flex; }
         .modal { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; }
         .modal h3 { color: #58a6ff; margin-bottom: 15px; }
-        .modal input, .modal textarea, .modal select { width: 100%; padding: 8px 12px; background: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; margin-bottom: 10px; font-size: 0.9em; }
+        .modal input, .modal textarea, .modal select { width: 100%; padding: 8px 12px; background: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; margin-bottom: 10px; font-size: 0.9em; font-family: inherit; }
         .modal textarea { min-height: 80px; resize: vertical; }
         .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+        .toast { position: fixed; bottom: 30px; right: 30px; padding: 12px 20px; border-radius: 8px; font-size: 0.9em; z-index: 200; animation: fadeIn 0.3s; }
+        .toast.success { background: #238636; color: #fff; }
+        .toast.error { background: #da3633; color: #fff; }
+        .toast.info { background: #1f6feb; color: #fff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .token-setup { padding: 20px; text-align: center; }
+        .token-setup input { max-width: 500px; margin: 10px auto; display: block; }
+        .token-setup p { color: #8b949e; font-size: 0.9em; margin: 8px 0; }
+        .token-setup a { color: #58a6ff; }
         @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .pattern-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Senior SDE Interview Prep</h1>
-        <p class="subtitle">Krishna Chaitanya Bogavalli — 12 Week Plan — Python</p>
+        <p class="subtitle">Krishna Chaitanya Bogavalli &mdash; 12 Week Plan &mdash; Python</p>
+
+        <!-- Sync Bar -->
+        <div class="sync-bar" id="syncBar">
+            <span class="status synced" id="syncStatus">Loading...</span>
+            <button class="btn sync" id="btnSync" onclick="syncToGitHub()" disabled>Sync to GitHub</button>
+            <button class="btn" onclick="loadFromGitHub()">Reload from GitHub</button>
+            <button class="btn" onclick="exportProgress()">Export JSON</button>
+            <button class="btn" onclick="showTokenSetup()">Settings</button>
+        </div>
+
+        <!-- Token Setup (hidden by default) -->
+        <div class="section token-setup" id="tokenSetup" style="display:none;">
+            <h3 style="color: #58a6ff; margin-bottom: 10px;">GitHub Token Setup</h3>
+            <p>Enter a GitHub PAT with <strong>Contents: Read &amp; write</strong> access to <code>sde-interview-prep</code>.</p>
+            <p>Create one at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></p>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxx or github_pat_xxxx">
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
+                <button class="btn primary" onclick="saveToken()">Save Token</button>
+                <button class="btn" onclick="hideTokenSetup()">Cancel</button>
+                <button class="btn warn" onclick="clearToken()">Clear Token</button>
+            </div>
+            <p style="margin-top: 10px; font-size: 0.8em;">Token is stored in your browser's localStorage only. Never sent anywhere except GitHub API.</p>
+        </div>
 
         <!-- Stats Overview -->
         <div class="stats-grid">
@@ -95,7 +132,7 @@
         <!-- Overall Progress -->
         <div class="section">
             <h2>Overall Progress</h2>
-            <div style="margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <div style="margin-bottom: 8px; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <span>Problems: <span id="solvedOf">0/130</span></span>
                 <span>Easy: <span id="easyCount" class="diff-easy">0</span> | Medium: <span id="medCount" class="diff-medium">0</span> | Hard: <span id="hardCount" class="diff-hard">0</span></span>
             </div>
@@ -121,22 +158,9 @@
         <div class="section">
             <h2>Weekly Problems</h2>
             <div class="week-timeline" id="weekTimeline"></div>
-            <div class="controls">
-                <button class="btn primary" onclick="markSelectedDone()">Mark Selected Done</button>
-                <button class="btn" onclick="exportProgress()">Export JSON</button>
-                <button class="btn" onclick="importProgress()">Import JSON</button>
-            </div>
             <table class="problem-table">
                 <thead>
-                    <tr>
-                        <th>Done</th>
-                        <th>LC#</th>
-                        <th>Problem</th>
-                        <th>Difficulty</th>
-                        <th>Pattern</th>
-                        <th>Time</th>
-                        <th>Alone?</th>
-                    </tr>
+                    <tr><th>Done</th><th>LC#</th><th>Problem</th><th>Difficulty</th><th>Pattern</th><th>Time</th><th>Alone?</th><th>Notes</th></tr>
                 </thead>
                 <tbody id="problemTableBody"></tbody>
             </table>
@@ -166,7 +190,7 @@
         </div>
     </div>
 
-    <!-- Modal for marking problems done -->
+    <!-- Mark Done Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3 id="modalTitle">Mark Problem Done</h3>
@@ -187,236 +211,335 @@
         </div>
     </div>
 
-    <input type="file" id="importFile" style="display:none" accept=".json">
-
     <script>
-        // Load progress from localStorage (or default)
-        let data = JSON.parse(localStorage.getItem('sde-prep-progress'));
+    const REPO = 'chaitu2568/sde-interview-prep';
+    const FILE_PATH = 'tracking/progress.json';
+    const API = 'https://api.github.com';
 
-        // If no local data, try to fetch from progress.json
-        if (!data) {
-            fetch('tracking/progress.json')
-                .then(r => r.ok ? r.json() : null)
-                .then(d => { if (d) { data = d; localStorage.setItem('sde-prep-progress', JSON.stringify(data)); render(); } })
-                .catch(() => {});
+    let data = null;
+    let fileSha = null;
+    let isDirty = false;
+    let selectedWeek = 1;
+    let currentProblemId = null;
+    let autoSaveTimer = null;
+
+    const PATTERNS = {
+        'arrays-hashing': 'Arrays & Hashing', 'two-pointers': 'Two Pointers',
+        'sliding-window': 'Sliding Window', 'stack': 'Stack',
+        'binary-search': 'Binary Search', 'linked-list': 'Linked List',
+        'trees': 'Trees', 'tries': 'Tries', 'heap': 'Heap',
+        'backtracking': 'Backtracking', 'graphs': 'Graphs',
+        'dp-1d': 'DP (1D)', 'dp-2d': 'DP (2D)', 'greedy': 'Greedy',
+        'intervals': 'Intervals', 'bit-manipulation': 'Bit Manipulation',
+        'design': 'Design'
+    };
+
+    function getToken() { return localStorage.getItem('gh-pat') || ''; }
+
+    function toast(msg, type='info') {
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+
+    function updateSyncStatus() {
+        const el = document.getElementById('syncStatus');
+        const btn = document.getElementById('btnSync');
+        if (!getToken()) {
+            el.textContent = 'No GitHub token set — click Settings';
+            el.className = 'status error';
+            btn.disabled = true;
+        } else if (isDirty) {
+            el.textContent = 'Unsaved changes — click Sync to push to GitHub';
+            el.className = 'status dirty';
+            btn.disabled = false;
+        } else {
+            el.textContent = 'Synced with GitHub';
+            el.className = 'status synced';
+            btn.disabled = true;
         }
+    }
 
-        // Fallback: generate from embedded data if nothing loaded
-        if (!data) {
-            data = getDefaultData();
-        }
+    // === GitHub API ===
+    async function ghFetch(path, opts = {}) {
+        const token = getToken();
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        if (token) headers['Authorization'] = `token ${token}`;
+        if (opts.body) headers['Content-Type'] = 'application/json';
+        const res = await fetch(`${API}${path}`, { ...opts, headers });
+        if (!res.ok) throw new Error(`GitHub API ${res.status}: ${res.statusText}`);
+        return res.json();
+    }
 
-        let selectedWeek = 1;
-        let currentProblemId = null;
-
-        function getDefaultData() {
-            return { stats: { totalSolved: 0, easy: 0, medium: 0, hard: 0, systemDesigns: 0, mockInterviews: 0, starStories: 0, currentStreak: 0, longestStreak: 0 },
-                confidence: {}, problems: [], systemDesigns: [], weeklyCheckins: [], currentWeek: 1 };
-        }
-
-        const PATTERNS = {
-            'arrays-hashing': 'Arrays & Hashing',
-            'two-pointers': 'Two Pointers',
-            'sliding-window': 'Sliding Window',
-            'stack': 'Stack',
-            'binary-search': 'Binary Search',
-            'linked-list': 'Linked List',
-            'trees': 'Trees',
-            'tries': 'Tries',
-            'heap': 'Heap',
-            'backtracking': 'Backtracking',
-            'graphs': 'Graphs',
-            'dp-1d': 'DP (1D)',
-            'dp-2d': 'DP (2D)',
-            'greedy': 'Greedy',
-            'intervals': 'Intervals',
-            'bit-manipulation': 'Bit Manipulation',
-            'design': 'Design'
-        };
-
-        function save() {
-            localStorage.setItem('sde-prep-progress', JSON.stringify(data));
-        }
-
-        function render() {
-            if (!data || !data.problems) return;
-            // Stats
-            const solved = data.problems.filter(p => p.solved).length;
-            const total = data.problems.length;
-            const easy = data.problems.filter(p => p.solved && p.difficulty === 'Easy').length;
-            const med = data.problems.filter(p => p.solved && p.difficulty === 'Medium').length;
-            const hard = data.problems.filter(p => p.solved && p.difficulty === 'Hard').length;
-            const sdDone = (data.systemDesigns || []).filter(s => s.completed).length;
-
-            document.getElementById('totalSolved').textContent = solved;
-            document.getElementById('currentWeek').textContent = data.currentWeek || 1;
-            document.getElementById('streak').textContent = data.stats.currentStreak || 0;
-            document.getElementById('sdCompleted').textContent = sdDone;
-            document.getElementById('mocksDone').textContent = data.stats.mockInterviews || 0;
-            document.getElementById('overallPct').textContent = Math.round(solved / total * 100) + '%';
-            document.getElementById('solvedOf').textContent = `${solved}/${total}`;
-            document.getElementById('easyCount').textContent = easy;
-            document.getElementById('medCount').textContent = med;
-            document.getElementById('hardCount').textContent = hard;
-            document.getElementById('sdOf').textContent = `${sdDone}/9`;
-            document.getElementById('starOf').textContent = `${data.stats.starStories || 0}/10`;
-
-            const pct = Math.round(solved / total * 100);
-            document.getElementById('overallBar').style.width = pct + '%';
-            document.getElementById('overallBar').textContent = pct + '%';
-
-            const sdPct = Math.round(sdDone / 9 * 100);
-            document.getElementById('sdBar').style.width = sdPct + '%';
-            document.getElementById('sdBar').textContent = sdPct + '%';
-
-            // Patterns
-            const grid = document.getElementById('patternGrid');
-            grid.innerHTML = '';
-            for (const [key, name] of Object.entries(PATTERNS)) {
-                const patternProbs = data.problems.filter(p => p.pattern === key);
-                if (patternProbs.length === 0) continue;
-                const done = patternProbs.filter(p => p.solved).length;
-                const pctP = Math.round(done / patternProbs.length * 100);
-                grid.innerHTML += `<div class="pattern-card">
-                    <div class="pattern-header"><span class="pattern-name">${name}</span><span class="pattern-count">${done}/${patternProbs.length}</span></div>
-                    <div class="pattern-bar"><div class="pattern-fill" style="width: ${pctP}%"></div></div>
-                </div>`;
-            }
-
-            // Week timeline
-            const timeline = document.getElementById('weekTimeline');
-            timeline.innerHTML = '';
-            for (let w = 1; w <= 12; w++) {
-                const weekProbs = data.problems.filter(p => p.week === w);
-                const weekDone = weekProbs.filter(p => p.solved).length;
-                const cls = weekDone === weekProbs.length && weekProbs.length > 0 ? 'completed' : (w === selectedWeek ? 'active' : '');
-                timeline.innerHTML += `<div class="week-badge ${cls}" onclick="selectWeek(${w})">W${w} (${weekDone}/${weekProbs.length})</div>`;
-            }
-
-            // Problem table
-            const tbody = document.getElementById('problemTableBody');
-            tbody.innerHTML = '';
-            const weekProbs = data.problems.filter(p => p.week === selectedWeek);
-            for (const p of weekProbs) {
-                const diffClass = p.difficulty === 'Easy' ? 'diff-easy' : p.difficulty === 'Medium' ? 'diff-medium' : 'diff-hard';
-                tbody.innerHTML += `<tr>
-                    <td><span class="check ${p.solved ? 'done' : 'pending'}" onclick="toggleProblem(${p.id})">${p.solved ? '&#9745;' : '&#9744;'}</span></td>
-                    <td><a href="https://leetcode.com/problems/${p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '')}" target="_blank" style="color: #58a6ff;">${p.num}</a></td>
-                    <td>${p.name}</td>
-                    <td class="${diffClass}">${p.difficulty}</td>
-                    <td style="color: #8b949e;">${PATTERNS[p.pattern] || p.pattern}</td>
-                    <td style="color: #8b949e;">${p.time ? p.time + 'm' : '-'}</td>
-                    <td style="color: #8b949e;">${p.solvedAlone === true ? 'Yes' : p.solvedAlone === 'partial' ? 'Hint' : p.solvedAlone === false ? 'No' : '-'}</td>
-                </tr>`;
-            }
-
-            // System Design
-            const sdGrid = document.getElementById('sdGrid');
-            sdGrid.innerHTML = '';
-            for (const sd of (data.systemDesigns || [])) {
-                sdGrid.innerHTML += `<div class="sd-card ${sd.completed ? 'done' : ''}" onclick="toggleSD(${sd.id})" style="cursor:pointer;">
-                    <div class="sd-name">${sd.completed ? '&#9745;' : '&#9744;'} ${sd.name}</div>
-                    <div class="sd-week">Week ${sd.week}</div>
-                    <div class="confidence-bar">${[1,2,3,4,5].map(i => `<div class="conf-dot ${i <= (sd.confidence||0) ? 'filled' : ''}"></div>`).join('')}</div>
-                </div>`;
-            }
-
-            // Heatmap
-            const heatmap = document.getElementById('heatmap');
-            heatmap.innerHTML = '';
-            for (let w = 1; w <= 12; w++) {
-                for (let d = 1; d <= 7; d++) {
-                    const dayNum = (w - 1) * 7 + d;
-                    const dayProbs = data.problems.filter(p => p.day === dayNum && p.solved);
-                    const count = dayProbs.length;
-                    const level = count === 0 ? '' : count <= 1 ? 'level-1' : count <= 2 ? 'level-2' : count <= 3 ? 'level-3' : 'level-4';
-                    heatmap.innerHTML += `<div class="heat-cell ${level}" title="Day ${dayNum}: ${count} problems"></div>`;
-                }
-            }
-        }
-
-        function selectWeek(w) { selectedWeek = w; render(); }
-
-        function toggleProblem(id) {
-            const p = data.problems.find(x => x.id === id);
-            if (!p) return;
-            if (p.solved) {
-                p.solved = false; p.date = null; p.time = null; p.solvedAlone = null; p.notes = '';
-                save(); render();
+    async function loadFromGitHub() {
+        try {
+            updateSyncStatus();
+            // Public repo — can read without token
+            const res = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const file = await res.json();
+            fileSha = file.sha;
+            const content = atob(file.content.replace(/\n/g, ''));
+            data = JSON.parse(content);
+            localStorage.setItem('sde-prep-data', JSON.stringify(data));
+            localStorage.setItem('sde-prep-sha', fileSha);
+            isDirty = false;
+            render();
+            updateSyncStatus();
+            toast('Loaded from GitHub', 'success');
+        } catch (err) {
+            console.error('GitHub load failed:', err);
+            // Fallback to localStorage
+            const cached = localStorage.getItem('sde-prep-data');
+            if (cached) {
+                data = JSON.parse(cached);
+                fileSha = localStorage.getItem('sde-prep-sha');
+                toast('Using cached data (GitHub fetch failed)', 'info');
             } else {
-                currentProblemId = id;
-                document.getElementById('modalTitle').textContent = `LC #${p.num}: ${p.name}`;
-                document.getElementById('modalTime').value = '';
-                document.getElementById('modalAlone').value = 'true';
-                document.getElementById('modalNotes').value = '';
-                document.getElementById('modal').classList.add('show');
+                toast('Could not load data: ' + err.message, 'error');
+                return;
             }
+            render();
+            updateSyncStatus();
         }
+    }
 
-        function closeModal() { document.getElementById('modal').classList.remove('show'); }
+    async function syncToGitHub() {
+        const token = getToken();
+        if (!token) { showTokenSetup(); return; }
+        if (!data) return;
 
-        function confirmMark() {
-            const p = data.problems.find(x => x.id === currentProblemId);
-            if (!p) return;
-            p.solved = true;
-            p.date = new Date().toISOString().split('T')[0];
-            p.time = parseInt(document.getElementById('modalTime').value) || null;
-            const aloneVal = document.getElementById('modalAlone').value;
-            p.solvedAlone = aloneVal === 'true' ? true : aloneVal === 'false' ? false : 'partial';
-            p.notes = document.getElementById('modalNotes').value;
-            // Update streak
-            data.stats.currentStreak = (data.stats.currentStreak || 0) + 1;
-            if (data.stats.currentStreak > (data.stats.longestStreak || 0)) data.stats.longestStreak = data.stats.currentStreak;
-            closeModal(); save(); render();
-        }
+        const btn = document.getElementById('btnSync');
+        btn.disabled = true;
+        btn.textContent = 'Syncing...';
 
-        function toggleSD(id) {
-            const sd = data.systemDesigns.find(x => x.id === id);
-            if (!sd) return;
-            if (sd.completed) {
-                sd.completed = false; sd.confidence = 0;
-            } else {
-                const conf = prompt('Confidence level (1-5)?', '3');
-                sd.completed = true;
-                sd.confidence = Math.min(5, Math.max(1, parseInt(conf) || 3));
+        try {
+            // Get latest SHA first to avoid conflicts
+            const res = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`, {
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            if (res.ok) {
+                const file = await res.json();
+                fileSha = file.sha;
             }
-            save(); render();
-        }
 
-        function markSelectedDone() {
-            const weekProbs = data.problems.filter(p => p.week === selectedWeek && !p.solved);
-            if (weekProbs.length === 0) { alert('All problems in this week are done!'); return; }
-            if (confirm(`Mark all ${weekProbs.length} remaining problems in Week ${selectedWeek} as done?`)) {
-                weekProbs.forEach(p => { p.solved = true; p.date = new Date().toISOString().split('T')[0]; });
-                save(); render();
-            }
-        }
-
-        function exportProgress() {
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = 'sde-prep-progress.json'; a.click();
-        }
-
-        function importProgress() {
-            document.getElementById('importFile').click();
-        }
-
-        document.getElementById('importFile').addEventListener('change', e => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = ev => {
-                try {
-                    data = JSON.parse(ev.target.result);
-                    save(); render();
-                    alert('Progress imported!');
-                } catch(err) { alert('Invalid JSON file'); }
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+            const body = {
+                message: `Update progress: ${data.problems.filter(p=>p.solved).length}/${data.problems.length} solved`,
+                content: content,
+                sha: fileSha
             };
-            reader.readAsText(file);
-        });
 
-        render();
+            const putRes = await fetch(`${API}/repos/${REPO}/contents/${FILE_PATH}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!putRes.ok) {
+                const errData = await putRes.json();
+                throw new Error(errData.message || `HTTP ${putRes.status}`);
+            }
+
+            const result = await putRes.json();
+            fileSha = result.content.sha;
+            localStorage.setItem('sde-prep-sha', fileSha);
+            localStorage.setItem('sde-prep-data', JSON.stringify(data));
+            isDirty = false;
+            updateSyncStatus();
+            toast('Synced to GitHub!', 'success');
+        } catch (err) {
+            console.error('Sync failed:', err);
+            toast('Sync failed: ' + err.message, 'error');
+        } finally {
+            btn.textContent = 'Sync to GitHub';
+            btn.disabled = !isDirty;
+        }
+    }
+
+    function markDirty() {
+        isDirty = true;
+        localStorage.setItem('sde-prep-data', JSON.stringify(data));
+        updateSyncStatus();
+        // Auto-sync after 30 seconds of inactivity
+        clearTimeout(autoSaveTimer);
+        if (getToken()) {
+            autoSaveTimer = setTimeout(() => { syncToGitHub(); }, 30000);
+        }
+    }
+
+    // === Token Management ===
+    function showTokenSetup() { document.getElementById('tokenSetup').style.display = ''; document.getElementById('tokenInput').value = getToken(); }
+    function hideTokenSetup() { document.getElementById('tokenSetup').style.display = 'none'; }
+    function saveToken() {
+        const token = document.getElementById('tokenInput').value.trim();
+        if (token) { localStorage.setItem('gh-pat', token); toast('Token saved!', 'success'); }
+        hideTokenSetup(); updateSyncStatus();
+    }
+    function clearToken() { localStorage.removeItem('gh-pat'); toast('Token cleared', 'info'); hideTokenSetup(); updateSyncStatus(); }
+
+    // === Render ===
+    function render() {
+        if (!data || !data.problems) return;
+        const solved = data.problems.filter(p => p.solved).length;
+        const total = data.problems.length;
+        const easy = data.problems.filter(p => p.solved && p.difficulty === 'Easy').length;
+        const med = data.problems.filter(p => p.solved && p.difficulty === 'Medium').length;
+        const hard = data.problems.filter(p => p.solved && p.difficulty === 'Hard').length;
+        const sdDone = (data.systemDesigns || []).filter(s => s.completed).length;
+
+        document.getElementById('totalSolved').textContent = solved;
+        document.getElementById('currentWeek').textContent = data.currentWeek || 1;
+        document.getElementById('streak').textContent = data.stats?.currentStreak || 0;
+        document.getElementById('sdCompleted').textContent = sdDone;
+        document.getElementById('mocksDone').textContent = data.stats?.mockInterviews || 0;
+        document.getElementById('overallPct').textContent = total ? Math.round(solved/total*100)+'%' : '0%';
+        document.getElementById('solvedOf').textContent = `${solved}/${total}`;
+        document.getElementById('easyCount').textContent = easy;
+        document.getElementById('medCount').textContent = med;
+        document.getElementById('hardCount').textContent = hard;
+        document.getElementById('sdOf').textContent = `${sdDone}/9`;
+        document.getElementById('starOf').textContent = `${data.stats?.starStories || 0}/10`;
+
+        const pct = total ? Math.round(solved/total*100) : 0;
+        document.getElementById('overallBar').style.width = pct+'%';
+        document.getElementById('overallBar').textContent = pct+'%';
+        const sdPct = Math.round(sdDone/9*100);
+        document.getElementById('sdBar').style.width = sdPct+'%';
+        document.getElementById('sdBar').textContent = sdPct+'%';
+
+        // Patterns
+        const grid = document.getElementById('patternGrid');
+        grid.innerHTML = '';
+        for (const [key, name] of Object.entries(PATTERNS)) {
+            const pp = data.problems.filter(p => p.pattern === key);
+            if (!pp.length) continue;
+            const d = pp.filter(p => p.solved).length;
+            const pc = Math.round(d/pp.length*100);
+            grid.innerHTML += `<div class="pattern-card"><div class="pattern-header"><span class="pattern-name">${name}</span><span class="pattern-count">${d}/${pp.length}</span></div><div class="pattern-bar"><div class="pattern-fill" style="width:${pc}%"></div></div></div>`;
+        }
+
+        // Week timeline
+        const tl = document.getElementById('weekTimeline');
+        tl.innerHTML = '';
+        for (let w = 1; w <= 12; w++) {
+            const wp = data.problems.filter(p => p.week === w);
+            const wd = wp.filter(p => p.solved).length;
+            const cls = wd === wp.length && wp.length > 0 ? 'completed' : (w === selectedWeek ? 'active' : '');
+            tl.innerHTML += `<div class="week-badge ${cls}" onclick="selectWeek(${w})">W${w} (${wd}/${wp.length})</div>`;
+        }
+
+        // Problem table
+        const tb = document.getElementById('problemTableBody');
+        tb.innerHTML = '';
+        const wp = data.problems.filter(p => p.week === selectedWeek);
+        for (const p of wp) {
+            const dc = p.difficulty==='Easy'?'diff-easy':p.difficulty==='Medium'?'diff-medium':'diff-hard';
+            const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
+            const alone = p.solvedAlone===true?'Yes':p.solvedAlone==='partial'?'Hint':p.solvedAlone===false?'No':'-';
+            tb.innerHTML += `<tr>
+                <td><span class="check ${p.solved?'done':'pending'}" onclick="toggleProblem(${p.id})">${p.solved?'&#9745;':'&#9744;'}</span></td>
+                <td><a href="https://leetcode.com/problems/${slug}" target="_blank" style="color:#58a6ff;">${p.num}</a></td>
+                <td>${p.name}</td>
+                <td class="${dc}">${p.difficulty}</td>
+                <td style="color:#8b949e;">${PATTERNS[p.pattern]||p.pattern}</td>
+                <td style="color:#8b949e;">${p.time?p.time+'m':'-'}</td>
+                <td style="color:#8b949e;">${alone}</td>
+                <td style="color:#484f58;font-size:0.8em;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(p.notes||'').replace(/"/g,'&quot;')}">${p.notes||''}</td>
+            </tr>`;
+        }
+
+        // System Design
+        const sg = document.getElementById('sdGrid');
+        sg.innerHTML = '';
+        for (const sd of (data.systemDesigns||[])) {
+            sg.innerHTML += `<div class="sd-card ${sd.completed?'done':''}" onclick="toggleSD(${sd.id})">
+                <div class="sd-name">${sd.completed?'&#9745;':'&#9744;'} ${sd.name}</div>
+                <div class="sd-week">Week ${sd.week}</div>
+                <div class="confidence-bar">${[1,2,3,4,5].map(i=>`<div class="conf-dot ${i<=(sd.confidence||0)?'filled':''}"></div>`).join('')}</div>
+            </div>`;
+        }
+
+        // Heatmap
+        const hm = document.getElementById('heatmap');
+        hm.innerHTML = '';
+        for (let w=1;w<=12;w++) for (let d=1;d<=7;d++) {
+            const dn=(w-1)*7+d;
+            const c=data.problems.filter(p=>p.day===dn&&p.solved).length;
+            const lv=c===0?'':c<=1?'level-1':c<=2?'level-2':c<=3?'level-3':'level-4';
+            hm.innerHTML+=`<div class="heat-cell ${lv}" title="Day ${dn}: ${c} problems"></div>`;
+        }
+    }
+
+    function selectWeek(w) { selectedWeek = w; render(); }
+
+    function toggleProblem(id) {
+        const p = data.problems.find(x => x.id === id);
+        if (!p) return;
+        if (p.solved) {
+            p.solved = false; p.date = null; p.time = null; p.solvedAlone = null; p.notes = '';
+            markDirty(); render();
+        } else {
+            currentProblemId = id;
+            document.getElementById('modalTitle').textContent = `LC #${p.num}: ${p.name}`;
+            document.getElementById('modalTime').value = '';
+            document.getElementById('modalAlone').value = 'true';
+            document.getElementById('modalNotes').value = '';
+            document.getElementById('modal').classList.add('show');
+        }
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+    function confirmMark() {
+        const p = data.problems.find(x => x.id === currentProblemId);
+        if (!p) return;
+        p.solved = true;
+        p.date = new Date().toISOString().split('T')[0];
+        p.time = parseInt(document.getElementById('modalTime').value) || null;
+        const v = document.getElementById('modalAlone').value;
+        p.solvedAlone = v==='true'?true:v==='false'?false:'partial';
+        p.notes = document.getElementById('modalNotes').value;
+
+        // Streak: check if solved something yesterday
+        const today = p.date;
+        if (!data.stats) data.stats = {};
+        const lastDate = data.stats.lastSolveDate;
+        if (lastDate) {
+            const diff = (new Date(today) - new Date(lastDate)) / 86400000;
+            if (diff <= 1) data.stats.currentStreak = (data.stats.currentStreak||0) + 1;
+            else if (diff > 1) data.stats.currentStreak = 1;
+        } else { data.stats.currentStreak = 1; }
+        data.stats.lastSolveDate = today;
+        if ((data.stats.currentStreak||0) > (data.stats.longestStreak||0)) data.stats.longestStreak = data.stats.currentStreak;
+
+        closeModal(); markDirty(); render();
+        toast(`Solved LC #${p.num}: ${p.name}!`, 'success');
+    }
+
+    function toggleSD(id) {
+        const sd = data.systemDesigns.find(x => x.id === id);
+        if (!sd) return;
+        if (sd.completed) { sd.completed = false; sd.confidence = 0; }
+        else { const c = prompt('Confidence level (1-5)?','3'); sd.completed = true; sd.confidence = Math.min(5,Math.max(1,parseInt(c)||3)); }
+        markDirty(); render();
+    }
+
+    function exportProgress() {
+        const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+        const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+        a.download='sde-prep-progress.json'; a.click();
+    }
+
+    // Warn before leaving with unsaved changes
+    window.addEventListener('beforeunload', e => {
+        if (isDirty && getToken()) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // Init
+    loadFromGitHub();
     </script>
 </body>
 </html>
